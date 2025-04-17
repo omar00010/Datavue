@@ -1,0 +1,18 @@
+services:
+  backend:
+    build:
+      context: ./api  # Path to the directory containing the Dockerfile
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"  # Maps port 8000 on host to the container
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_proxy
+    ports:
+      - "80:80"  # Expose port 80 for the Nginx proxy
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf  # Mount the Nginx config
+    depends_on:
+      - backend  # Nginx only starts after backend service has spun up
+

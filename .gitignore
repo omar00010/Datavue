@@ -1,0 +1,10 @@
+# .gitignore file to hide specific files and directories
+__pycache__/
+*.pyc
+*.duckdb
+*.duckdb.wal
+*.wal
+temp_uploads/
+*.log
+.venv
+*.csv
