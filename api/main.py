@@ -24,5 +24,3 @@ async def uploadDataFile(file: UploadFile):
     table_name = duckdbDB.load_csv(file, file.filename)  # Load the CSV into DuckDB
 
     return {"message": f"File '{file.filename}' uploaded successfully and loaded into DuckDB"}
-
-@app.get("/api/query")
