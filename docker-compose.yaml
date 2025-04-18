@@ -6,6 +6,15 @@ services:
     ports:
       - "8000:8000"  # Maps port 8000 on host to the container
 
+  frontend:
+    build:
+      context: ./frontend  # Path to the directory containing the frontend Dockerfile
+    container_name: svelte_app
+    ports:
+      - "3000:3000"  # Maps port 3000 on host to the container
+    depends_on:
+      - backend  # Ensure backend is up before frontend starts
+
   nginx:
     image: nginx:alpine
     container_name: nginx_proxy

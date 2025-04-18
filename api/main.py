@@ -1,11 +1,11 @@
 import duckdb, os, database
 from fastapi import FastAPI, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
-
-
 duckdbDB = database.Database()
+
 
 @app.get("/api")
 async def root():
