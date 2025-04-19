@@ -9,3 +9,4 @@ temp_uploads/
 .venv
 *.csv
 *.db
+.env
