@@ -25,10 +25,8 @@ class Database:
         try:
             self.db_connection.execute(f"CREATE OR REPLACE TABLE {table_name} AS SELECT * FROM read_csv_auto(?)", (file_path,))
         except Exception as e:
-            # Log the error for debugging
             raise HTTPException(status_code=500, detail=f"Failed to load CSV into DuckDB: {str(e)}")
         finally:
-            # Ensure the file exists before attempting to delete it
             if os.path.exists(file_path):
                 os.remove(file_path)
 

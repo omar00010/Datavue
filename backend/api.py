@@ -1,11 +1,16 @@
-import duckdb, os, database
+import duckdb, os, backend.db.db as db
 from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
-duckdbDB = database.Database()
+duckdbDB = db.Database()
 
+"""
+
+    This is the main API endpoint for the backend
+
+"""
 
 @app.get("/api/health")
 async def root():
@@ -21,6 +26,7 @@ async def list_tables():
         return {"tables": [table[0] for table in tables]}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch tables: {str(e)}")
+    
 
 
 
