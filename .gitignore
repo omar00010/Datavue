@@ -8,3 +8,4 @@ temp_uploads/
 *.log
 .venv
 *.csv
+*.db

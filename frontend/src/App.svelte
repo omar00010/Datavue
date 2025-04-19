@@ -2,7 +2,7 @@
     let message = "Loading...";
 
     // Fetch the message from the API
-    fetch("/api") // Updated to match the backend's CORS configuration
+    fetch("/api/health") // Updated to match the backend's CORS configuration
         .then((response) => response.json())
         .then((data) => {
             message = data.message;

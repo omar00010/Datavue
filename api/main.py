@@ -7,12 +7,25 @@ app = FastAPI()
 duckdbDB = database.Database()
 
 
-@app.get("/api")
+@app.get("/api/health")
 async def root():
     """ Root endpoint to check if the API is running """
-    return {"message": "Welcome to the DataVue API!"}
+    return {"message": "The API is running! \n Welcome to the DataVue API."}
 
 
+@app.get("/api/list/tables")
+async def list_tables():
+    """ Endpoint to list all tables in the DuckDB database """
+    try:
+        tables = duckdbDB.db_connection.execute("SHOW TABLES").fetchall()
+        return {"tables": [table[0] for table in tables]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch tables: {str(e)}")
+
+
+
+
+#Depricated
 @app.post("/api/upload")
 async def uploadDataFile(file: UploadFile):
     """ Endpoint to upload a CSV file and load it into DuckDB """

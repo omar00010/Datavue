@@ -1,15 +1,18 @@
 import duckdb, os
 from fastapi import HTTPException, UploadFile
+from dotenv import load_dotenv
 
+# Load environment variables from .env file
+load_dotenv()
 
 class Database:
     def __init__(self):
         """Initialize the database connection"""
-        self.db_connection = duckdb.connect(database="datavue.duckdb")
-        self.current_table = None
-        self.upload_dir = "./temp_uploads"
-       
+        database_path = os.getenv("DATABASE_PATH")  
+        self.db_connection = duckdb.connect(database=database_path)    
     
+    
+    """Depricated for now"""
     async def load_csv(self, file: UploadFile, file_path):
         """Load a CSV file into DuckDB"""
         # Save the file to a temporary location
