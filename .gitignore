@@ -10,3 +10,6 @@ temp_uploads/
 *.csv
 *.db
 .env
+.vscode/
+*.DS_Store
+.vscode
