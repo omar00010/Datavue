@@ -26,20 +26,18 @@ async def list_tables():
         return {"tables": [table[0] for table in tables]}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch tables: {str(e)}")
-    
+
+app.get("/api/ask")
+async def ask_data(query: str):
+    """ Endpoint to query database data. Takes in NL query and returns queried data""" 
+    try:
+        # This here will be retrieved from RAG. Tables metadata are combined together, embedded and a similarity search is done to figure out what data to use
+        context = None
+        # Here the langhchain is invoked with the relvant context and prompt in order to generate the answer
+        answer = None 
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to query the data: {str(e)}")
 
 
 
-
-#Depricated
-@app.post("/api/upload")
-async def uploadDataFile(file: UploadFile):
-    """ Endpoint to upload a CSV file and load it into DuckDB """
-
-    # Check if the uploaded file is a CSV
-    if not file.filename.endswith(".csv"):
-        raise HTTPException(status_code=400, detail="Invalid file type. Only CSV files are allowed.")
-    
-    table_name = duckdbDB.load_csv(file, file.filename)  # Load the CSV into DuckDB
-
-    return {"message": f"File '{file.filename}' uploaded successfully and loaded into DuckDB"}

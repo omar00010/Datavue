@@ -12,27 +12,9 @@ class Database:
         self.db_connection = duckdb.connect(database=database_path)    
     
     
-    """Depricated for now"""
-    async def load_csv(self, file: UploadFile, file_path):
-        """Load a CSV file into DuckDB"""
-        # Save the file to a temporary location
-        file_path = os.path.join(UPLOAD_DIR, file.filename)
-        with open(file_path, "wb") as f:
-            f.write(await file.read())
-        
-        # Load the CSV content into DuckDB from the file path
-        table_name = "current_file"
+    async def runSQLQuery(sqlQuery: str):
+        """ Run the generated SQL on the database"""
         try:
-            self.db_connection.execute(f"CREATE OR REPLACE TABLE {table_name} AS SELECT * FROM read_csv_auto(?)", (file_path,))
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Failed to load CSV into DuckDB: {str(e)}")
-        finally:
-            if os.path.exists(file_path):
-                os.remove(file_path)
-
-        # Set the current table for querying
-        self.current_table = table_name
-
-        return True            
             
+
 
