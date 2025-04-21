@@ -1,16 +1,45 @@
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.text_splitter import CharacterTextSplitter
+from langchain.schema import Document
+from dotenv import load_dotenv
+import os
 
-def process_metadata_query(db ,query, chunk_size=500, chunk_overlap=0, k=3):
-    """
-    Process metadata and perform a similarity search based on the user's query
+load_dotenv()
 
-    Returns a list of tables with the most relvant tables 
+def process_metadata_query(db, query, k=3):
     """
-    search_results = []
+    Proceces the tables metadata and returns the most relevant tables based on the query.
+    This is done by embedding the metadata and performing a similarity search.
+    Then, a list of (k) tables with the most relvant tables is returned.
+    """
+
     tables_metadata = db.getMetadata()
 
-    # Run embeddings and similarity search
+    # Convert metadata into descriptive strings
+    try:
+        documents = []
+        for table in tables_metadata:
+            table_name = table["name"]
+            columns = ", ".join(table["columns"])
+            content = f"Table: {table_name}\nColumns: {columns}"
+            documents.append(Document(page_content=content, metadata={"table_name": table_name, "columns": table["columns"]}))
 
-    return search_results
+        openai_api_key = os.getenv("OPENAI_API_KEY")
+        if not openai_api_key:
+            raise ValueError("OPENAI_API_KEY environment variable is not set.")
+
+        # Embed the metadata documents
+        embeddings = OpenAIEmbeddings() 
+        faiss_store = FAISS.from_documents(documents, embeddings)
+
+        # Perform similarity search
+        search_results = faiss_store.similarity_search(query, k=k)
+
+
+        relevant_tables = []
+        for doc in search_results:
+            relevant_tables.append(doc.metadata)  
+    except Exception as e:
+        raise ValueError(f"Failed to process metadata query: {str(e)}")
+    return relevant_tables
