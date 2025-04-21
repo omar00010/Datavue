@@ -1,10 +1,10 @@
-import duckdb, os, backend.db.db as db
+import duckdb, os, services.db as db, services.rag as RAG
 from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
-duckdbDB = db.Database()
+duckdb = db.Database()
 
 """
 
@@ -22,8 +22,9 @@ async def root():
 async def list_tables():
     """ Endpoint to list all tables in the DuckDB database """
     try:
-        tables = duckdbDB.db_connection.execute("SHOW TABLES").fetchall()
-        return {"tables": [table[0] for table in tables]}
+        tables = duckdb.db_connection.execute("SHOW TABLES").fetchall()
+        metadata = duckdb.getMetadata()
+        return {"tables": [table[0] for table in tables], "metdata":metadata}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch tables: {str(e)}")
 
@@ -32,7 +33,11 @@ async def ask_data(query: str):
     """ Endpoint to query database data. Takes in NL query and returns queried data""" 
     try:
         # This here will be retrieved from RAG. Tables metadata are combined together, embedded and a similarity search is done to figure out what data to use
-        context = None
+        context = RAG.process_metadata_query(
+            db = duckdb,
+            query = query
+        )
+
         # Here the langhchain is invoked with the relvant context and prompt in order to generate the answer
         answer = None 
 
