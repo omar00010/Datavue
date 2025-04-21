@@ -8,8 +8,11 @@ load_dotenv()
 class Database:
     def __init__(self):
         """Initialize the database connection"""
-        database_path = os.getenv("DATABASE_PATH")  
-        self.db_connection = duckdb.connect(database=database_path)    
+        database_path = os.getenv("DATABASE_PATH")
+        try:
+            self.db_connection = duckdb.connect(database=database_path)    
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to connect to database: {str(e)}")
     
     
     async def runSQLQuery(self, sqlQuery: str):
@@ -23,16 +26,17 @@ class Database:
         """Get database metadata for all tables"""
         tables_metadata = []
         tables = self.db_connection.execute("SHOW TABLES").fetchall()
-        
-        for (table_name,) in tables:
-            # Get column names
-            columns = self.db_connection.execute(f"PRAGMA table_info('{table_name}')").fetchdf()["name"].tolist()
-            
-            tables_metadata.append({
-                "name": table_name,
-                "columns": columns,
-            })
-        
+        try:
+            for (table_name,) in tables:
+                # Get column names
+                columns = self.db_connection.execute(f"PRAGMA table_info('{table_name}')").fetchdf()["name"].tolist()
+                
+                tables_metadata.append({
+                    "name": table_name,
+                    "columns": columns,
+                })
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to fetch metadata: {str(e)}")    
         return tables_metadata
                     
 
