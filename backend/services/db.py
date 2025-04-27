@@ -19,7 +19,8 @@ class Database:
     async def runSQLQuery(self, sqlQuery: str):
         """ Run the generated SQL on the database"""
         try:
-            pass
+            result = self.db_connection.execute(sqlQuery)
+            return result.fetchall()
         except Exception as e:
             return f"Failed to query database: {str(e)}"
     

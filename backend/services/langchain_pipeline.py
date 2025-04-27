@@ -69,3 +69,18 @@ class LangChainPipeline:
         state["sql_query"] = result["query"]
 
         return state
+    
+    def generate_answer(self, state: State):
+        """Answer question using retrieved information as context."""
+        prompt = (
+            "Given the following user question, corresponding SQL query, "
+            "and SQL result, answer the user question.\n\n"
+            f'Question: {state["question"]}\n'
+            f'SQL Query: {state["sql_query"]}\n'
+            f'SQL Result: {state["sql_result"]}\n\n'
+        )
+
+        response = self.llm.invoke(prompt)
+        state["answer"] = response.content
+        return state
+        

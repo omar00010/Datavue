@@ -45,12 +45,12 @@ async def fetch_answer():
 
         # Populate the State (DTO) object
         state = RAG.process_metadata_query(duckdb, state)
-        print(state["relevant_tables"])
         state = langchainPipline.write_sql_query(duckdb, state)
-        
-
+        state["sql_result"] = duckdb.db_connection.execute(state["sql_query"]).fetchall()
+        state = langchainPipline.generate_answer(state)
         
         return {"answer": state["answer"], "sql_query": state["sql_query"], "sql_result": state["sql_result"]}
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to extract answer: {str(e)}")
+
