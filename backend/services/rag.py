@@ -2,14 +2,15 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.schema import Document
+import models.State as State
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
 
-def process_metadata_query(db, question, k=3):
+def process_metadata_query(db, state: State, k=3):
     """
-    Proceces the tables metadata and returns the most relevant tables based on the query.
+    Proceces the tables metadata and returns the most relevant tables based on the question.
     This is done by embedding the metadata and performing a similarity search.
     Then, a list of (k) tables with the most relvant tables is returned.
     """
@@ -34,12 +35,14 @@ def process_metadata_query(db, question, k=3):
         faiss_store = FAISS.from_documents(documents, embeddings)
 
         # Perform similarity search
-        search_results = faiss_store.similarity_search(question, k=k)
+        search_results = faiss_store.similarity_search(state["question"], k=k)
 
 
         relevant_tables = []
         for doc in search_results:
-            relevant_tables.append(doc.metadata)  
+            relevant_tables.append(doc.metadata)
+        state["relevant_tables"] = relevant_tables
+
     except Exception as e:
         raise ValueError(f"Failed to process metadata question: {str(e)}")
-    return relevant_tables
+    return state
