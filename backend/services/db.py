@@ -9,6 +9,7 @@ class Database:
     def __init__(self):
         """Initialize the database connection"""
         database_path = os.getenv("DATABASE_PATH")
+        self.dialect = "duckdb"
         try:
             self.db_connection = duckdb.connect(database=database_path)    
         except Exception as e:
