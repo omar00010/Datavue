@@ -1,10 +1,13 @@
 services:
   backend:
     build:
-      context: ./api  # Path to the directory containing the Dockerfile
-    container_name: fastapi_app
+      context: ./backend  # Path to the directory containing the Dockerfile
+    container_name: fastapi_backend
     ports:
       - "8000:8000"  # Maps port 8000 on host to the container
+    env_file:
+      - .env  # Load environment variables from .env file
+  
 
   frontend:
     build:
