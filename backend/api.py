@@ -34,8 +34,8 @@ async def fetch_answer():
     try:        
         tables = duckdb.db_connection.execute("SHOW TABLES").fetchall()
         metadata = duckdb.getMetadata()
-        query = "What is the average age of customers in the customers table?"
-        relevant_tables = RAG.process_metadata_query(duckdb, query)
+        question = "What is the average age of customers in the customers table?"
+        relevant_tables = RAG.process_metadata_query(duckdb, question)
         
         # The relevant tables are fed to the Lanchain agent to generate the SQL query
 
