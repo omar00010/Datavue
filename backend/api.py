@@ -1,4 +1,4 @@
-import duckdb, os, services.db as db, services.rag as RAG
+import duckdb, os, services.db as db, services.rag as RAG, services.langchain_pipeline as langchain
 from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -28,21 +28,21 @@ async def list_tables():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch tables: {str(e)}")
 
-app.get("/api/ask")
-async def ask_data(query: str):
-    """ Endpoint to query database data. Takes in NL query and returns queried data""" 
-    try:
-        # This here will be retrieved from RAG. Tables metadata are combined together, embedded and a similarity search is done to figure out what data to use
-        context = RAG.process_metadata_query(
-            db = duckdb,
-            query = query
-        )
+@app.get("/api/ask")
+async def fetch_answer():
+    """ Endpoint to fetch an answer from the database using RAG + LangChain """
+    try:        
+        tables = duckdb.db_connection.execute("SHOW TABLES").fetchall()
+        metadata = duckdb.getMetadata()
+        query = "What is the average age of customers in the customers table?"
+        relevant_tables = RAG.process_metadata_query(duckdb, query)
+        
+        # The relevant tables are fed to the Lanchain agent to generate the SQL query
 
-        # Here the langhchain is invoked with the relvant context and prompt in order to generate the answer
-        answer = None 
+        #answer = langchain.get_answer(query, relevant_tables)
 
+        
+        return {"relevant_tables":relevant_tables}
+    
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to query the data: {str(e)}")
-
-
-
+        raise HTTPException(status_code=500, detail=f"Failed to extract answer: {str(e)}")
