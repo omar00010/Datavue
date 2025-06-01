@@ -13,3 +13,4 @@ temp_uploads/
 .vscode/
 *.DS_Store
 .vscode
+.github/
