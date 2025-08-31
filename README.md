@@ -1,7 +1,7 @@
 ## Datavue
 More yap; less sql
 
-Run it (frontend is dead just curl backend on localhost:80)
+Run it 
 
 ```
 docker compose up --build
